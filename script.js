@@ -1,7 +1,5 @@
 const btn = document.getElementById("btn");
-const emoji = document.getElementById("emoji");
-const emojiName = document.getElementById("emoji-name");
-const emojiCard = document.querySelector(".emoji-card");
+const emojiGrid = document.getElementById("emoji-grid");
 const toast = document.getElementById("toast");
 // {I DIDN'T USE API KEY INSTEAD USED LOCAL ARRAY OF OBJECTS TO STORE EMOJIS}
 
@@ -54,28 +52,40 @@ window.addEventListener('DOMContentLoaded', generateEmoji);
 
 btn.addEventListener("click", generateEmoji);
 
-emojiCard.addEventListener("click", copyToClipboard);
-
 function generateEmoji() {
-    const randomNum = Math.floor(Math.random() * emojiList.length);
-    const selectedEmoji = emojiList[randomNum];
-
-    emoji.innerText = selectedEmoji.char;
-    emojiName.innerText = selectedEmoji.name;
-
-    emoji.style.animation = 'none';
-    emoji.offsetHeight; 
-    emoji.style.animation = 'popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-
+    emojiGrid.innerHTML = ''; 
+    
+    for (let i = 0; i < 15; i++) {
+        const randomNum = Math.floor(Math.random() * emojiList.length);
+        const selectedEmoji = emojiList[randomNum];
+        
+        const emojiCard = document.createElement('div');
+        emojiCard.classList.add('emoji-card');
+        
+        const emojiDisplay = document.createElement('div');
+        emojiDisplay.classList.add('emoji-display');
+        emojiDisplay.innerText = selectedEmoji.char;
+        
+        const emojiName = document.createElement('div');
+        emojiName.classList.add('emoji-name');
+        emojiName.innerText = selectedEmoji.name;
+        
+        emojiCard.addEventListener('click', () => {
+            copyToClipboard(selectedEmoji.char, selectedEmoji.name);
+        });
+        
+        emojiCard.appendChild(emojiDisplay);
+        emojiCard.appendChild(emojiName);
+        emojiGrid.appendChild(emojiCard);
+    }
+    
     const btnIcon = btn.querySelector('.btn-icon');
     btnIcon.style.transform = `rotate(${Math.random() * 360}deg)`;
 }
 
-function copyToClipboard() {
-    const textToCopy = emoji.innerText;
-
-    navigator.clipboard.writeText(textToCopy).then(() => {
-        showToast(`Copied ${textToCopy} to clipboard!`);
+function copyToClipboard(emojiChar, emojiName) {
+    navigator.clipboard.writeText(emojiChar).then(() => {
+        showToast(`Copied ${emojiChar} (${emojiName}) to clipboard!`);
     }).catch(err => {
         console.error('Failed to copy: ', err);
         showToast('Failed to copy 😢');
